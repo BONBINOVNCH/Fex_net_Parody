@@ -4,6 +4,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const { nanoid } = require("nanoid");
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocs = require("./swagger");
 
 //config express
 
@@ -51,8 +53,36 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 //endpoints
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
-app.post("/uploads", upload.single("file"), async (req, res) => {
+/**
+ * @swagger
+ *    /upload:
+ *        post:
+ *            summary: Завантаження файлу
+ *            tags: [Files]
+ *            requestBody:
+ *                required: true
+ *                content:
+ *                    multipart/form-data:
+ *                        schema:
+ *                            type: object
+ *                            properties:
+ *                                file:
+ *                                    type: string
+ *                                    format: binary
+ *            responses:
+ *                201:
+ *                    description: Файл успішно завантажено
+ *                400:
+ *                    description: Файл не був завантажении
+ */
+
+app.get("/", (req, res) => {
+    res.send("server is running");
+});
+
+app.post("/upload", upload.single("file"), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ message: "Файл не знайдено" });
@@ -77,6 +107,23 @@ app.post("/uploads", upload.single("file"), async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+/**
+ * @swagger
+ *    /download/{code}:
+ *        get:
+ *            summary: Завантаження файлу
+ *            tags: [Files]
+ *            parameters:
+ *                - in: path
+ *                  name: code
+ *                  required: true
+ *            responses:
+ *                200:
+ *                    description: Файл успішно завантажено
+ *                404:
+ *                    description: Файл не знайдено
+ */
 
 app.get("/download/:code", async (req, res) => {
     try {
