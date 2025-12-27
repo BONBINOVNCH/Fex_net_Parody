@@ -2,8 +2,8 @@ const express = require("express");
 const multer = require("multer");
 const path = require("path");
 const mongoose = require("mongoose");
-const { create } = require("domain");
 require("dotenv").config();
+const { nanoid } = require("nanoid");
 
 //config express
 
@@ -36,7 +36,7 @@ const FileSchema = new mongoose.Schema({
     },
 });
 
-const File = mongoose.model("File", FileSchema);
+const FileModel = mongoose.model("File", FileSchema);
 
 //config storage
 const storage = multer.diskStorage({
@@ -49,6 +49,34 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
+
+//endpoints
+
+app.post("/uploads", upload.single("file"), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ message: "Файл не знайдено" });
+        }
+
+        const fileCode = nanoid(6);
+
+        const newFile = new FileModel({
+            filrname: req.file.filename,
+            path: req.file.path,
+            code: fileCode,
+        });
+
+        await newFile.save();
+
+        res.status(200).json({
+            code: fileCode,
+            message: "Файл успішно завантажено",
+        });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
+});
 
 app.get("/", (req, res) => {
     res.send("Server is running");
