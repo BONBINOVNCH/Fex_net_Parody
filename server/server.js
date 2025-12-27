@@ -24,7 +24,7 @@ mongoose
     });
 
 const FileSchema = new mongoose.Schema({
-    filrname: String,
+    filename: String,
     path: String,
     code: {
         type: String,
@@ -61,7 +61,7 @@ app.post("/uploads", upload.single("file"), async (req, res) => {
         const fileCode = nanoid(6);
 
         const newFile = new FileModel({
-            filrname: req.file.filename,
+            filename: req.file.filename,
             path: req.file.path,
             code: fileCode,
         });
@@ -78,8 +78,19 @@ app.post("/uploads", upload.single("file"), async (req, res) => {
     }
 });
 
-app.get("/", (req, res) => {
-    res.send("Server is running");
+app.get("/download/:code", async (req, res) => {
+    try {
+        const fileData = await FileModel.findOne({ code: req.params.code });
+
+        if (!fileData) {
+            return res.status(404).json({ message: "Файл не знайдено" });
+        }
+
+        res.download(fileData.path, fileData.filename);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: "Server error" });
+    }
 });
 
 app.listen(port, () => {
