@@ -1,10 +1,11 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const mongoose = require("mongoose");
 const { nanoid } = require("nanoid");
 const swaggerUi = require("swagger-ui-express");
 const swaggerDocs = require("./swagger");
+
+const connectDB = require("./config/database");
 
 require("dotenv").config();
 
@@ -16,26 +17,7 @@ app.use(express.static("public"));
 
 //config db
 
-const URL_DB = process.env.URL_DB;
-mongoose
-  .connect(URL_DB)
-  .then(() => console.log("DB connected"))
-  .catch((err) => console.log(err));
-
-const FileSchema = new mongoose.Schema({
-  filename: String,
-  path: String,
-  code: {
-    type: String,
-    unique: true,
-  },
-  createAt: {
-    type: Date,
-    default: Date.now,
-  },
-});
-
-const FileModel = mongoose.model("File", FileSchema);
+connectDB();
 
 // config storage
 const storage = multer.diskStorage({
