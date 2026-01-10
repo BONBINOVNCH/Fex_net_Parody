@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FileShare</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>FileShare</h1>
+        <p>Share files with your friends</p>
+      </header>
+
+      <main class="grid-container">
+        <section class="card upload-section">
+          <h2>Upload file</h2>
+          <form id="uploadForm">
+            <div class="file-input-wrapper">
+              <input type="file" name="file" id="fileInput" required />
+              <label for="fileInput" class="file-lable">
+                <span id="fileName">Choose a file</span>
+              </label>
+            </div>
+            <button type="submit" class="btn">Upload</button>
+          </form>
+
+          <div id="uploadResult" class="result-box hidden">
+            <p>Файл успішно завантажено!</p>
+            <div class="code-display">
+              <span id="generatedCode">------</span>
+              <button id="copyBtn">Copy</button>
+            </div>
+            <small>Використовуйте цей код для отримання файлу</small>
+          </div>
+        </section>
+
+        <section class="card download-section">
+          <h2>Download file</h2>
+          <form id="downloadForm">
+            <div class="input-group">
+              <input
+                type="text"
+                id="codeInput"
+                placeholder="Enter code"
+                required
+                maxlength="6"
+              />
+            </div>
+            <button type="submit" class="btn">Download file</button>
+          </form>
+
+          <div id="downloadError" class="error-msg hidden"></div>
+        </section>
+      </main>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
